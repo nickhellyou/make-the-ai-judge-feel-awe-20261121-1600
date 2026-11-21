@@ -37,8 +37,18 @@ TEXT = (
 def main() -> None:
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
-    with open(os.path.join(out_dir, "entry.txt"), "w", encoding="utf-8") as f:
+    entry_path = os.path.join(out_dir, "entry.txt")
+    with open(entry_path, "w", encoding="utf-8") as f:
         f.write(TEXT)
+    # Re-read the file just written and check it is a valid entry:
+    # 1-280 characters of valid UTF-8, as the brief requires.
+    with open(entry_path, "r", encoding="utf-8") as f:
+        written = f.read()
+    if not 1 <= len(written) <= 280:
+        raise ValueError(
+            "entry.txt holds %d characters, but the brief allows 1-280"
+            % len(written)
+        )
 
 
 if __name__ == "__main__":
